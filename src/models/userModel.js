@@ -72,14 +72,14 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// userSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'shoppingCart',
-//     select: '-__v -productStatus -_id -status',
-//   });
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'shoppingCart',
+    select: '-__v -productStatus -status +name +description',
+  });
 
-//   next();
-// });
+  next();
+});
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

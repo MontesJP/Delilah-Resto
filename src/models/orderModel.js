@@ -26,12 +26,10 @@ const orderSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.ObjectId,
       ref: 'Product',
-      required: [true, 'An orders need at least one product'],
     },
   ],
   total: {
     type: Number,
-    required: [true, 'An order needs a total price'],
   },
   paymentMethod: {
     type: mongoose.Schema.ObjectId,
@@ -47,7 +45,7 @@ const orderSchema = new mongoose.Schema({
 orderSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'products',
-    select: '-__v -productStatus -_id -status',
+    select: '-__v -productStatus -status',
   })
     .populate({
       path: 'user',
@@ -58,6 +56,12 @@ orderSchema.pre(/^find/, function (next) {
       select: '-__v -status',
     });
 
+  next();
+});
+
+orderSchema.pre(/^find/, function (next) {
+  // THIS points to the actual query
+  this.find({ orderStatus: { $ne: 'Cancelled' } });
   next();
 });
 

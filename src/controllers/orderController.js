@@ -8,6 +8,7 @@ const getTotal = async (user) => {
     value += el.price;
     return value;
   });
+  return value;
 };
 
 exports.getAllOrders = async (req, res) => {
@@ -18,7 +19,7 @@ exports.getAllOrders = async (req, res) => {
       status: 'success',
       results: order.length,
       data: {
-        order,
+        orders: order,
       },
     });
   } catch (err) {
@@ -32,35 +33,39 @@ exports.getAllOrders = async (req, res) => {
 exports.getOrder = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    const order = await Order.findOne(req.params.id);
+    const order = await Order.findById(req.params.id);
 
-    if (!(user._id === order.user._id)) {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'You cannot access that order',
+    if (user.id == order.user.id || user.role === 'admin') {
+      return res.status(200).json({
+        status: 'success',
+        order,
       });
     }
-    res.status(200).json({
-      status: 'success',
-      order,
+    return res.status(403).json({
+      status: 'fail',
+      message: 'You cannot access that order',
     });
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
-      status: 'error',
-      message: 'This route is not yet defined',
+      status: 'fail',
+      message: err.message,
     });
   }
 };
 
 exports.createOrder = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('shoppingCart');
-    console.log(user.shoppingCart);
+    const user = await User.findById(req.user.id);
 
+    if (user.shoppingCart.length < 1) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Please first add a product to your shopping cart',
+      });
+    }
     const address = req.body.address || user.address;
-    let products = [];
-    products = user.shoppingCart;
-    const total = await getTotal();
+    const products = user.shoppingCart;
+    const total = await getTotal(user);
     const { paymentMethod } = req.body;
 
     const order = await Order.create({
@@ -70,6 +75,9 @@ exports.createOrder = async (req, res) => {
       total,
       paymentMethod,
     });
+
+    user.shoppingCart = [];
+    user.save();
 
     res.status(201).json({
       status: 'success',
@@ -85,39 +93,100 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// exports.updateProduct = async (req, res) => {
-//   try {
-//     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-//       new: true,
-//       runValidators: true,
-//     });
+exports.updateOrder = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
 
-//     res.status(200).json({
-//       status: 'success',
-//       data: {
-//         product,
-//       },
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 'fail',
-//       message: err,
-//     });
-//   }
-// };
+    const order = await Order.findById({ _id: req.params.id });
 
-// exports.deleteProduct = async (req, res) => {
-//   try {
-//     await Product.findByIdAndDelete(req.params.id);
+    if (user._id != order.user.id && user.role != 'admin') {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'You are not allowed to edit this order',
+      });
+    }
+    if (order.orderStatus != 'Pending' && user.role != 'admin') {
+      return res.status(401).json({
+        status: 'fail',
+        message: `Order status: ${order.orderStatus}. You can't make any updates`,
+      });
+    }
 
-//     res.status(204).json({
-//       status: 'success',
-//       data: null,
-//     });
-//   } catch (err) {
-//     res.status(404).json({
-//       status: 'fail',
-//       message: err,
-//     });
-//   }
-// };
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).json({
+      status: 'success',
+      updatedOrder,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
+exports.cancelOrder = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const order = await Order.findByIdAndUpdate(req.params.id);
+
+    if (user._id != order.user.id && user.role != 'admin') {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'You are not allowed to edit this order',
+      });
+    }
+    if (order.orderStatus != 'Pending' && user.role != 'admin') {
+      return res.status(401).json({
+        status: 'fail',
+        message: `Order status: ${order.orderStatus}. You can't cancel this order`,
+      });
+    }
+
+    order.orderStatus = 'Cancelled';
+    await order.validate();
+    order.save();
+
+    res.status(204).json({
+      status: 'success',
+      order: order.id,
+      orderStatus: order.orderStatus,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    order.orderStatus = `${req.body.orderStatus}`;
+
+    await order.validate();
+    order.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        order,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};

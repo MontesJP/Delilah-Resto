@@ -9,7 +9,7 @@ exports.getAllProducts = async (req, res) => {
       status: 'success',
       results: product.length,
       data: {
-        product,
+        products: product,
       },
     });
   } catch (err) {
@@ -97,13 +97,14 @@ exports.addShoppingCart = async (req, res) => {
     const user = await User.findById(req.user.id);
 
     user.shoppingCart.push(product._id);
-    user.save();
 
     let total = 0;
     user.shoppingCart.forEach((el) => {
       total += el.price;
     });
     console.log(total);
+
+    user.save();
 
     res.status(200).json({
       status: 'success',
