@@ -190,3 +190,23 @@ exports.updateOrderStatus = async (req, res) => {
     });
   }
 };
+
+exports.myOrderHistory = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const order = await Order.find({ user: user._id });
+
+    res.status(200).json({
+      status: 'success',
+      results: order.length,
+      data: {
+        order,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};

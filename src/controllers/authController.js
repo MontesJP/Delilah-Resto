@@ -120,6 +120,13 @@ exports.protect = async (req, res, next) => {
       });
     }
 
+    if (currentUser.active === false) {
+      return res.status(401).json({
+        status: 'fail',
+        message:
+          'This user is currently suspended, please contact an administrator',
+      });
+    }
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser;
     next();

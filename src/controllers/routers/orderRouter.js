@@ -14,10 +14,8 @@ router
   .post(authController.protect, orderController.createOrder);
 
 router
-  .route('/:id')
-  .get(authController.protect, orderController.getOrder)
-  .patch(authController.protect, orderController.updateOrder)
-  .delete(authController.protect, orderController.cancelOrder);
+  .route('/myOrderHistory/')
+  .get(authController.protect, orderController.myOrderHistory);
 
 router
   .route('/status/:id')
@@ -26,4 +24,11 @@ router
     authController.restrictTo('admin'),
     orderController.updateOrderStatus
   );
+
+router
+  .route('/:id')
+  .get(authController.protect, orderController.getOrder)
+  .patch(authController.protect, orderController.updateOrder)
+  .delete(authController.protect, orderController.cancelOrder);
+
 module.exports = router;

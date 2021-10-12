@@ -21,6 +21,13 @@ router.patch(
 );
 router.patch('/updateMe', authController.protect, userController.updateMe);
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
+
+router.patch(
+  '/suspend/:id',
+  authController.protect,
+  authController.restrictTo('admin'),
+  userController.suspendUser
+);
 router
   .route('/:id')
   .get(userController.getUser)

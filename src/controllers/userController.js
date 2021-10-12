@@ -109,7 +109,7 @@ exports.deleteMe = async (req, res, next) => {
       data: null,
     });
   } catch (err) {
-    return res.status.json({
+    return res.status(500).json({
       status: 'fail',
       message: err.message,
     });
@@ -147,6 +147,22 @@ exports.deleteUser = async (req, res) => {
     });
   } catch (err) {
     res.status(404).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
+exports.suspendUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.params.id, { active: false });
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(500).json({
       status: 'fail',
       message: err.message,
     });

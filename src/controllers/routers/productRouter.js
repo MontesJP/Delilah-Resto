@@ -1,17 +1,23 @@
 const express = require('express');
 const productController = require('../productController');
 const authController = require('../authController');
+const cache = require('../cache');
 
 const router = express.Router();
 
 router
   .route('/')
-  .get(authController.protect, productController.getAllProducts)
+  .get(authController.protect, cache.cache, productController.getAllProducts)
   .post(
     authController.protect,
     authController.restrictTo('admin'),
     productController.createProduct
   );
+
+router
+  .route('/cart/:id')
+  .post(authController.protect, productController.addShoppingCart)
+  .patch(authController.protect, productController.removeShoppingCart);
 
 router
   .route('/:id')
@@ -26,10 +32,5 @@ router
     authController.restrictTo('admin'),
     productController.deleteProduct
   );
-
-router
-  .route('/cart/:id')
-  .post(authController.protect, productController.addShoppingCart)
-  .patch(authController.protect, productController.removeShoppingCart);
 
 module.exports = router;

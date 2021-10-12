@@ -1,10 +1,14 @@
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
+const { storeObjectInCache, invalidateCache } = require('./cache');
 
 exports.getAllProducts = async (req, res) => {
   try {
+    console.time('POST TIME');
     const product = await Product.find().select('-__v');
-
+    console.log('necesitas cache');
+    storeObjectInCache(req, product);
+    console.timeEnd('POST TIME');
     res.status(200).json({
       status: 'success',
       results: product.length,
@@ -40,6 +44,10 @@ exports.createProduct = async (req, res) => {
   try {
     const product = await Product.create(req.body);
 
+    invalidateCache({
+      method: 'GET',
+      baseUrl: req.baseUrl,
+    });
     res.status(201).json({
       status: 'success',
       data: {
@@ -61,6 +69,11 @@ exports.updateProduct = async (req, res) => {
       runValidators: true,
     });
 
+    invalidateCache({
+      method: 'GET',
+      baseUrl: req.baseUrl,
+    });
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -78,6 +91,11 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
+
+    invalidateCache({
+      method: 'GET',
+      baseUrl: req.baseUrl,
+    });
 
     res.status(204).json({
       status: 'success',
