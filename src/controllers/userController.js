@@ -109,7 +109,7 @@ exports.deleteMe = async (req, res, next) => {
       data: null,
     });
   } catch (err) {
-    return res.status(500).json({
+    return res.status(401).json({
       status: 'fail',
       message: err.message,
     });

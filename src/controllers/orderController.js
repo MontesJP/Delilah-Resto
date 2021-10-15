@@ -1,6 +1,6 @@
+/* eslint-disable eqeqeq */
 const Order = require('../models/orderModel');
 const User = require('../models/userModel');
-const Payment = require('../models/paymentModel');
 
 const getTotal = async (user) => {
   let value = 0;
@@ -110,6 +110,21 @@ exports.updateOrder = async (req, res) => {
         status: 'fail',
         message: `Order status: ${order.orderStatus}. You can't make any updates`,
       });
+    }
+
+    if (req.body.address) {
+      order.address = req.body.address;
+    }
+    if (req.body.paymentMethod) {
+      order.paymentMethod = req.body.paymentMethod;
+    }
+    if (req.body.add) {
+      order.products.push(req.body.add);
+    }
+    if (req.body.remove) {
+      const filtered = order.products.filter((el) => el._id != req.body.remove);
+      order.products = filtered;
+      return order.products;
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(

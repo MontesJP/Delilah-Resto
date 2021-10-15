@@ -12,7 +12,7 @@ function makeKey(req) {
 
 exports.storeObjectInCache = (req, object) => {
   const key = makeKey(req);
-  client.set(key, object);
+  client.set(key, JSON.stringify(object));
 };
 
 exports.cache = (req, res, next) => {
@@ -25,7 +25,8 @@ exports.cache = (req, res, next) => {
       next();
     } else {
       console.log('en cache');
-      return res.status(200).json({ data });
+      const jsonData = JSON.parse(data);
+      return res.status(200).json({ jsonData });
     }
   });
 };

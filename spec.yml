@@ -1,0 +1,894 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Delilah Restó.
+  description: This is an API for Delilah Restó to manage their business with ease.
+  termsOfService: http://example.com/terms/
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+# schemes:
+#   - http
+#   - https
+# securityDefinitions:
+#   Bearer:
+#     type: apiKey
+#     name: Authorization
+#     in: header
+#     scheme: bearer
+#     bearerFormat: JWT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+basePath: "http://localhost:3000/api/v1"
+tags: 
+  - name: Authentication
+    description: Authentication and Authorization functions
+  - name: Users
+    description: All user related functionalities
+  - name: Products
+    description: Products functionalities
+  - name: Orders
+    description: Operations on orders
+  - name: Payments
+    description: Access to payment methods management
+
+
+paths:
+  /users/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Creates a new user
+      operationId: signup
+      requestBody:
+        description: User object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      responses:
+        201:
+          description: Succesfully created user
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+
+  /users/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login into your account with corresponding credentials
+      operationId: login
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        200:
+          description: User logged in
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+
+  /users/updateMyPassword:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Authentication
+      summary: Update current user's password
+      operationId: updateMyPassword
+      requestBody:
+        description: New password verification
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordUpdate"
+      responses:
+        201:
+          description: Succesfully updated password user
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+
+
+  /users/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Shows a list of all users
+      operationId: getAllUsers
+      responses:
+        200:
+          description: Retrieving users list
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+        500:
+          description: Internal server error
+          content: {}
+
+  /users/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Gets a specific user
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of user being requested
+      responses:
+        200:
+          description: Retrieving user
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+    
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Updates an user's information
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of user being updated
+      requestBody:
+        description: Information to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      responses:
+        200:
+          description: User edited successfully
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Deletes an user
+      operationId: delete User
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of user being updated
+      responses:
+        204:
+          description: User deleted successfully
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+
+  /users/suspend/{id}:
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Suspends an user
+      operationId: suspendUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of user being suspended
+      responses:
+        204:
+          description: User suspended successfully
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+
+  /users/updateMe:
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Update current logged in user information
+      operationId: updateMe
+      parameters:
+      requestBody:
+        description: Information to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserEdit"
+      responses:
+        200:
+          description: User updated successfully
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+
+
+  /users/deleteMe:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      summary: Delete current logged in user
+      operationId: deleteMe
+      parameters:
+      responses:
+        204:
+          description: User deleted successfully
+          content: {}
+        401:
+          description: Permission denied
+          content: {}
+
+
+  /products/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Gets all products
+      operationId: getAllProducts
+      responses:
+        200:
+          description: Succesfully retrieved products list
+          content: {}
+        404:
+          description: Products not found
+          content: {}
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Creates a new product
+      operationId: createProduct
+      requestBody:
+        description: Product object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+      responses:
+        201:
+          description: Succesfully created product
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Permission denied
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+
+  /products/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Gets a specific product
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of product being requested
+      responses:
+        200:
+          description: Retrieving product
+          content: {}
+        404:
+          description: Product not found
+          content: {}
+
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Updates a product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the product being updated
+      requestBody:
+        description: Information to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+      responses:
+        200:
+          description: Succesfully edited product
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+        404:
+          description: Product not found
+          content: {}
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Deletes a product
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the product being deleted
+      responses:
+        204:
+          description: Succesfully deleted product
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        404:
+          description: Product not found
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+  /products/cart/{id}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Adds corresponding product to user's basket
+      operationId: addShoppingCart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target product
+      responses:
+        200:
+          description: Succesfully added product
+          content: {}
+        404:
+          description: Product not found
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      summary: Removes a product from the user's shopping cart
+      operationId: removeShoppingCart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the product being removed
+      responses:
+        204:
+          description: Succesfully removed product
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        404:
+          description: Product not found
+          content: {}
+
+
+  /orders:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Gets all orders
+      operationId: getAllOrders
+      responses:
+        200:
+          description: Succesfully retrieved orders list
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}        
+        404:
+          description: Products not found
+          content: {}
+
+
+
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Creates a new order
+      operationId: createOrder
+      requestBody:
+        description: Add payment method and optional new address
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        201:
+          description: Succesfully created order
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}        
+
+
+
+  /orders/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Gets a specific order
+      operationId: getOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of order being requested
+      responses:
+        200:
+          description: Retrieving order
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}           
+        404:
+          description: Product not found
+          content: {}
+
+
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Updates corresponding order
+      operationId: updateOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target order
+      requestBody:
+        description: Edit options
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderEdit"
+      responses:
+        200:
+          description: Succesfully edited order
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Cancels an existing order
+      operationId: cancelOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target order
+      responses:
+        204:
+          description: Succesfully cancelled order
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+  /orders/myOrderHistory/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Shows user's order history
+      operationId: myOrderHistory
+      responses:
+        200:
+          description: Succesfully retrieved user's order history
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+
+
+  /orders/status/{id}:
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Orders
+      summary: Switch order status
+      operationId: updateOrderStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target order
+      requestBody:
+        description: Order status to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatus"
+      responses:
+        200:
+          description: Succesfully updated order status
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+
+  /payments/:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Payments
+      summary: Gets all payment options
+      operationId: getAllPayments
+      responses:
+        200:
+          description: Succesfully retrieved payment options
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Payment methods not found
+          content: {}
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Payments
+      summary: Creates a new payment method
+      operationId: createPayment
+      requestBody:
+        description: Payment Method object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+      responses:
+        200:
+          description: Succesfully created payment method
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+  /payments/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Payments
+      summary: Gets a specific payment method
+      operationId: getPayment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of payment method being requested
+      responses:
+        200:
+          description: Retrieving payment method
+          content: {}      
+        404:
+          description: Payment method not found
+          content: {}
+
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - Payments
+      summary: Updates corresponding payment method
+      operationId: updatePayment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target payment method
+      requestBody:
+        description: Payment Method edit options
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+      responses:
+        200:
+          description: Succesfully updated payment method
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Payments
+      summary: Deletes corresponding payment method
+      operationId: deletePayment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ID of the target payment method
+      responses:
+        204:
+          description: Succesfully deleted payment method
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: You don't have permissions to perform this action
+          content: {}
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Users:
+      properties:
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: integer
+        address:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
+    UserLogin:
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UserEdit:
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        telephone:
+          type: string
+        address:
+          type: string
+    PasswordUpdate:
+      properties:
+        passwordCurrent:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
+    Order:
+      properties:
+        address:
+          type: string
+        paymentMethod:
+          type: string
+    Products:
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+        status:
+          type: string
+    OrderEdit:
+      properties:
+        address:
+          type: string
+        paymentMethod:
+          type: string
+        add:
+          type: string
+        remove:
+          type: string
+    OrderStatus:
+      properties:
+        orderStatus:
+          type: string
+    Payment:
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string

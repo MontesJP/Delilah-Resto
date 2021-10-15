@@ -32,7 +32,7 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-exports.signup = async (req, res, next) => {
+exports.signup = async (req, res) => {
   try {
     const newUser = await User.create({
       name: req.body.name,
@@ -54,7 +54,7 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -150,7 +150,7 @@ exports.restrictTo =
     next();
   };
 
-exports.updatePassword = async (req, res, next) => {
+exports.updatePassword = async (req, res) => {
   try {
     // Get user from collection
     const user = await User.findById(req.user.id).select('+password');
