@@ -4,11 +4,8 @@ const { storeObjectInCache, invalidateCache } = require('./cache');
 
 exports.getAllProducts = async (req, res) => {
   try {
-    console.time('POST TIME');
     const product = await Product.find().select('-__v');
-    console.log('necesitas cache');
     storeObjectInCache(req, product);
-    console.timeEnd('POST TIME');
     res.status(200).json({
       status: 'success',
       results: product.length,
@@ -116,12 +113,6 @@ exports.addShoppingCart = async (req, res) => {
 
     user.shoppingCart.push(product._id);
 
-    let total = 0;
-    user.shoppingCart.forEach((el) => {
-      total += el.price;
-    });
-    console.log(total);
-
     user.save();
 
     res.status(200).json({
@@ -145,12 +136,6 @@ exports.removeShoppingCart = async (req, res) => {
       // eslint-disable-next-line eqeqeq
       (el) => el._id != product.id
     );
-
-    let total = 0;
-    filtered.forEach((el) => {
-      total += el.price;
-    });
-    console.log(total);
 
     user.shoppingCart = filtered;
     user.save();
