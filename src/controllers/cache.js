@@ -22,7 +22,13 @@ exports.cache = (req, res, next) => {
       next();
     } else {
       const jsonData = JSON.parse(data);
-      return res.status(200).json({ jsonData });
+      return res.status(200).json({
+        status: 'success',
+        results: jsonData.length,
+        cacheData: {
+          products: jsonData,
+        },
+      });
     }
   });
 };
