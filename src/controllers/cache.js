@@ -17,14 +17,10 @@ exports.storeObjectInCache = (req, object) => {
 
 exports.cache = (req, res, next) => {
   const key = makeKey(req);
-  console.log(key);
-  console.time('CACHE TIME');
   client.get(key, (error, data) => {
     if (error || !data) {
-      console.timeEnd('CACHE TIME');
       next();
     } else {
-      console.log('en cache');
       const jsonData = JSON.parse(data);
       return res.status(200).json({ jsonData });
     }

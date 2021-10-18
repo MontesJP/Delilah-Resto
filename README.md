@@ -2,7 +2,9 @@
 
 This is an API for the Delilah Restó restaurant and in order to facilitate management and improve the user experience.
 
-**_Testing keys can be found on the server.js file_**
+**Database connection:\_**
+
+DATABASE: mongodb+srv://acamica-test:qf56RvaPMiOhayJO@clusterdelilahresto.v7tig.mongodb.net/Delilah-Resto?retryWrites=true&w=majority
 
 Creator: [Juan Pablo Montes](https://github.com/MontesJP)
 
