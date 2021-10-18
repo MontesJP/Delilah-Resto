@@ -2,6 +2,8 @@
 
 This is an API for the Delilah Restó restaurant and in order to facilitate management and improve the user experience.
 
+**_Testing keys can be found on the server.js file_**
+
 Creator: [Juan Pablo Montes](https://github.com/MontesJP)
 
 ### It has CRUD functionalities for:
