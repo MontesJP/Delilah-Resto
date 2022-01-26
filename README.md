@@ -88,4 +88,4 @@ To access the API documentation in Swagger and test its functionalities, visit [
 
 ## Aclaration
 
-The JSON Web Token generated after sign-up and login is stored in a cookie so in order to access the full functionalities of the API in Swagger you need to pass _just_ the JWT in the **Authorization** header:
+The JSON Web Token generated after sign-up and login is stored in a cookie so in order to access the full functionalities of the API in Swagger you need to pass _only_ the JWT in the **Authorization** header:
