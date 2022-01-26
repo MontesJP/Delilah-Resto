@@ -1,4 +1,4 @@
-# Delilah Restó
+# Delilah Resto
 
 This is an API for the Delilah Restó restaurant and in order to facilitate management and improve the user experience.
 
