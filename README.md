@@ -33,7 +33,7 @@ For the correct functioning of the API and its documentation, it is necessary to
 
   Express will help us to mount the server online and start it.
 
-  More information about [Express](https://expressjs.com/).
+  More information about [Express](https://expressjs.com/)
 
 - Mongoose:
 
@@ -63,12 +63,12 @@ For the correct functioning of the API and its documentation, it is necessary to
 
   We use this package to create and render the dynamic API documentation.
 
-  More information about [Swagger - ui - express](https://www.npmjs.com/package/swagger-ui-express).
+  More information about [Swagger - ui - express](https://www.npmjs.com/package/swagger-ui-express)
 
 - Js-yaml:
   Parser/writer to create .yaml/.yml files with JavaScript
 
-  More information about [js-yaml](https://www.npmjs.com/package/js-yaml).
+  More information about [js-yaml](https://www.npmjs.com/package/js-yaml)
 
 #### Install using npm:
 
