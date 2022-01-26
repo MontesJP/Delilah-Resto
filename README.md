@@ -33,13 +33,13 @@ For the correct functioning of the API and its documentation, it is necessary to
 
   Express will help us to mount the server online and start it.
 
-  More information about[Express](https://expressjs.com/).
+  More information about [Express](https://expressjs.com/).
 
 - Mongoose:
 
   Mongoose is an ODM for our MongoDB database and provides a straight-forward, schema-based solution to model our application data.
 
-  More information about [Mongoose]https://mongoosejs.com/)
+  More information about [Mongoose](https://mongoosejs.com/)
 
 - Redis:
 
